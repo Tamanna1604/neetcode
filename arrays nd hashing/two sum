@@ -1,0 +1,22 @@
+
+
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>(); // value -> index
+
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+
+            // If complement is already in map, return its index and current index
+            if (map.containsKey(complement)) {
+                int j = map.get(complement);
+                return new int[]{Math.min(i, j), Math.max(i, j)}; // return smaller index first
+            }
+
+            map.put(nums[i], i); // store current value and its index
+        }
+
+        // This line won't be reached if input is guaranteed to have one solution
+        return new int[]{-1, -1};
+    }
+}
