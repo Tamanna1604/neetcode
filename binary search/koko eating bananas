@@ -1,0 +1,39 @@
+public class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        int left = 1;
+        int right = getMax(piles);
+        int result = right;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            int hours = getTotalHours(piles, mid);
+
+            if (hours <= h) {
+                result = mid;  // Try smaller k
+                right = mid - 1;
+            } else {
+                left = mid + 1;  // k is too small
+            }
+        }
+
+        return result;
+    }
+
+    // Find the max in the piles array
+    private int getMax(int[] piles) {
+        int max = 0;
+        for (int pile : piles) {
+            max = Math.max(max, pile);
+        }
+        return max;
+    }
+
+    // Calculate total hours to eat all piles with speed k
+    private int getTotalHours(int[] piles, int k) {
+        int hours = 0;
+        for (int pile : piles) {
+            hours += (pile + k - 1) / k;  // Equivalent to ceil(pile / k)
+        }
+        return hours;
+    }
+}
