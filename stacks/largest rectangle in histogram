@@ -1,0 +1,40 @@
+import java.util.*;
+
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        int[] nextSmallest = new int[n];
+        int[] prevSmallest = new int[n];
+        Stack<Integer> st = new Stack<>();
+        
+        // Next smallest to the right
+        Arrays.fill(nextSmallest, n); // default to n (meaning no smaller bar to the right)
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && heights[i] < heights[st.peek()]) {
+                nextSmallest[st.pop()] = i;
+            }
+            st.push(i);
+        }
+
+        // Clear stack
+        st.clear();
+
+        // Previous smallest to the left
+        Arrays.fill(prevSmallest, -1); // default to -1 (meaning no smaller bar to the left)
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.isEmpty() && heights[i] < heights[st.peek()]) {
+                prevSmallest[st.pop()] = i;
+            }
+            st.push(i);
+        }
+
+        int maxRect = 0;
+        for (int i = 0; i < n; i++) {
+            int width = nextSmallest[i] - prevSmallest[i] - 1;
+            int rect = heights[i] * width;
+            maxRect = Math.max(maxRect, rect);
+        }
+
+        return maxRect;
+    }
+}
