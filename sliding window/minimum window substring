@@ -1,0 +1,46 @@
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s.length() < t.length()) return "";
+
+        // Frequency map for characters in t
+        Map<Character, Integer> mapt = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            mapt.put(c, mapt.getOrDefault(c, 0) + 1);
+        }
+
+        // Sliding window
+        Map<Character, Integer> maps = new HashMap<>();
+        int left = 0, right = 0;
+        int minLen = Integer.MAX_VALUE;
+        int start = 0;
+        int have = 0, need = mapt.size(); // how many chars match
+
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            maps.put(c, maps.getOrDefault(c, 0) + 1);
+
+            if (mapt.containsKey(c) && maps.get(c).intValue() == mapt.get(c).intValue()) {
+                have++;
+            }
+
+            // Try to shrink the window
+            while (have == need) {
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    start = left;
+                }
+
+                char lc = s.charAt(left);
+                maps.put(lc, maps.get(lc) - 1);
+                if (mapt.containsKey(lc) && maps.get(lc).intValue() < mapt.get(lc).intValue()) {
+                    have--;
+                }
+                left++;
+            }
+
+            right++;
+        }
+
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(start, start + minLen);
+    }
+}
