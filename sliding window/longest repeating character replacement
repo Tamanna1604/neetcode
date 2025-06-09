@@ -1,0 +1,22 @@
+class Solution {
+    public int characterReplacement(String s, int k) {
+        int[] freq = new int[26]; // Since only uppercase letters
+        int maxCount = 0; // Count of the most frequent char in window
+        int left = 0, maxLength = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+            freq[s.charAt(right) - 'A']++;
+            maxCount = Math.max(maxCount, freq[s.charAt(right) - 'A']);
+
+            // If we need to replace more than k characters, shrink the window
+            while ((right - left + 1) - maxCount > k) {
+                freq[s.charAt(left) - 'A']--;
+                left++;
+            }
+
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+
+        return maxLength;
+    }
+}
