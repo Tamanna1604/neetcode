@@ -1,0 +1,22 @@
+class Solution {
+    int maxlen = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        dfs(root);
+        return maxlen;
+    }
+
+    // This helper returns the height of the current node
+    private int dfs(TreeNode node) {
+        if (node == null) return 0;
+
+        int left = dfs(node.left);
+        int right = dfs(node.right);
+
+        // Diameter at current node = left height + right height
+        maxlen = Math.max(maxlen, left + right);
+
+        // Return height of current node
+        return Math.max(left, right) + 1;
+    }
+}
