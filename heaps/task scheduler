@@ -1,0 +1,42 @@
+import java.util.*;
+
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        // Step 1: Count frequencies
+        int[] freq = new int[26];
+        for (char task : tasks) {
+            freq[task - 'A']++;
+        }
+
+        // Step 2: Max-heap to store task frequencies
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        for (int f : freq) {
+            if (f > 0) pq.add(f);
+        }
+
+        int time = 0;
+
+        // Step 3: Schedule tasks in cycles of (n + 1)
+        while (!pq.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            int cycle = n + 1;
+
+            for (int i = 0; i < cycle && !pq.isEmpty(); i++) {
+                temp.add(pq.poll());
+                time++;
+            }
+
+            // Decrease frequency and re-add to queue if tasks remain
+            for (int f : temp) {
+                if (f - 1 > 0) pq.add(f - 1);
+            }
+
+            // If tasks still remain, fill idle slots
+            if (!pq.isEmpty()) {
+                time += cycle - temp.size();
+            }
+        }
+
+        return time;
+    }
+}
