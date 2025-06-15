@@ -1,0 +1,38 @@
+import java.util.*;
+
+class Solution {
+    public int[] findRedundantConnection(int[][] edges) {
+        int n = edges.length;
+        int[] parent = new int[n + 1];  // nodes are 1-indexed
+
+        // Initialize parent[i] = i
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+
+            int pu = find(u, parent);
+            int pv = find(v, parent);
+
+            if (pu == pv) {
+                // u and v already connected => adding this edge forms a cycle
+                return edge;
+            }
+
+            // Union the sets
+            parent[pu] = pv;
+        }
+
+        return new int[0]; // No redundant edge found (shouldn't happen in valid input)
+    }
+
+    private int find(int x, int[] parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent);  // Path compression
+        }
+        return parent[x];
+    }
+}
