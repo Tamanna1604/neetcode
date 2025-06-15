@@ -1,0 +1,41 @@
+import java.util.*;
+
+class Solution {
+    public boolean validTree(int n, int[][] edges) {
+        if (edges.length != n - 1) return false; // A tree must have exactly n - 1 edges
+
+        // Step 1: Build graph
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++)
+            adj.add(new ArrayList<>());
+        
+        for (int[] edge : edges) {
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+
+        // Step 2: DFS to detect cycles and ensure connectivity
+        boolean[] visited = new boolean[n];
+        if (!dfs(0, -1, adj, visited)) return false;
+
+        // Step 3: Check if all nodes were visited (i.e., graph is connected)
+        for (boolean v : visited) {
+            if (!v) return false;
+        }
+
+        return true;
+    }
+
+    private boolean dfs(int node, int parent, List<List<Integer>> adj, boolean[] visited) {
+        if (visited[node]) return false;
+
+        visited[node] = true;
+
+        for (int neighbor : adj.get(node)) {
+            if (neighbor == parent) continue; // skip the parent
+            if (!dfs(neighbor, node, adj, visited)) return false; // cycle detected
+        }
+
+        return true;
+    }
+}
