@@ -1,0 +1,39 @@
+import java.util.*;
+
+class Solution {
+    public int countComponents(int n, int[][] edges) {
+        int[] parent = new int[n];
+        for(int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+
+        for(int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            union(u, v, parent);
+        }
+
+        // Use a Set to count unique parents (components)
+        Set<Integer> set = new HashSet<>();
+        for(int i = 0; i < n; i++) {
+            set.add(find(i, parent));  // important: use find()
+        }
+
+        return set.size();
+    }
+
+    void union(int u, int v, int[] parent) {
+        int pu = find(u, parent);
+        int pv = find(v, parent);
+        if (pu != pv) {
+            parent[pu] = pv;  // union by setting parent
+        }
+    }
+
+    int find(int v, int[] parent) {
+        if (parent[v] != v) {
+            parent[v] = find(parent[v], parent);  // Path compression
+        }
+        return parent[v];
+    }
+}
