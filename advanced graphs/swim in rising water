@@ -1,0 +1,35 @@
+class Solution {
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        boolean[][] visited = new boolean[n][n];
+
+        // Min-heap: stores [row, col, time]
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        pq.offer(new int[]{0, 0, grid[0][0]}); // Start at (0, 0) with time = elevation
+
+        int[][] directions = {{0,1}, {1,0}, {0,-1}, {-1,0}}; // Right, Down, Left, Up
+
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int r = curr[0], c = curr[1], time = curr[2];
+
+            // If we reached destination
+            if (r == n - 1 && c == n - 1) return time;
+
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
+
+            for (int[] dir : directions) {
+                int nr = r + dir[0];
+                int nc = c + dir[1];
+
+                if (nr >= 0 && nr < n && nc >= 0 && nc < n && !visited[nr][nc]) {
+                    int nextTime = Math.max(time, grid[nr][nc]); // Wait if elevation is higher
+                    pq.offer(new int[]{nr, nc, nextTime});
+                }
+            }
+        }
+
+        return -1; // Not reachable (shouldn’t happen per constraints)
+    }
+}
