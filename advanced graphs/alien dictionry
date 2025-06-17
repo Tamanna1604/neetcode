@@ -1,0 +1,63 @@
+import java.util.*;
+
+class Solution {
+    public String foreignDictionary(String[] words) {
+        Map<Character, List<Character>> graph = new HashMap<>();
+        int[] indegree = new int[26];
+        Arrays.fill(indegree, -1); // -1 means character not present
+
+        // Step 1: Initialize graph and indegree for all characters in words
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                if (indegree[c - 'a'] == -1) {
+                    indegree[c - 'a'] = 0;
+                    graph.put(c, new ArrayList<>());
+                }
+            }
+        }
+
+        // Step 2: Build the graph
+        for (int i = 0; i < words.length - 1; i++) {
+            String w1 = words[i], w2 = words[i + 1];
+            int minLen = Math.min(w1.length(), w2.length());
+            boolean foundOrder = false;
+
+            for (int j = 0; j < minLen; j++) {
+                char c1 = w1.charAt(j), c2 = w2.charAt(j);
+                if (c1 != c2) {
+                    graph.get(c1).add(c2);
+                    indegree[c2 - 'a']++;
+                    foundOrder = true;
+                    break;
+                }
+            }
+
+            // Edge case: prefix conflict e.g. ["abc", "ab"] -> invalid
+            if (!foundOrder && w1.length() > w2.length()) return "";
+        }
+
+        // Step 3: Topological sort (Kahn's algorithm)
+        Queue<Character> q = new LinkedList<>();
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (indegree[c - 'a'] == 0) {
+                q.offer(c);
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        while (!q.isEmpty()) {
+            char curr = q.poll();
+            sb.append(curr);
+            for (char neighbor : graph.get(curr)) {
+                indegree[neighbor - 'a']--;
+                if (indegree[neighbor - 'a'] == 0) {
+                    q.offer(neighbor);
+                }
+            }
+        }
+
+        // Final check: if not all letters are used, return ""
+        if (sb.length() != graph.size()) return "";
+        return sb.toString();
+    }
+}
