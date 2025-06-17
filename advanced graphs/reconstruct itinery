@@ -1,0 +1,31 @@
+import java.util.*;
+
+class Solution {
+    Map<String, PriorityQueue<String>> graph = new HashMap<>();
+    LinkedList<String> itinerary = new LinkedList<>();
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        // Step 1: Build the graph
+        for (List<String> ticket : tickets) {
+            String from = ticket.get(0);
+            String to = ticket.get(1);
+            graph.computeIfAbsent(from, x -> new PriorityQueue<>()).offer(to);
+        }
+
+        // Step 2: Start DFS from JFK
+        dfs("JFK");
+
+        // Step 3: Return the reversed itinerary
+        return itinerary;
+    }
+
+    private void dfs(String airport) {
+        // Visit all destinations from current airport in lexical order
+        PriorityQueue<String> arrivals = graph.get(airport);
+        while (arrivals != null && !arrivals.isEmpty()) {
+            String next = arrivals.poll(); // Lexicographically smallest
+            dfs(next);
+        }
+        itinerary.addFirst(airport); // Add to itinerary when done with all neighbors
+    }
+}
