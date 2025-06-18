@@ -1,0 +1,52 @@
+import java.util.*;
+
+class CountSquares {
+    // Map<x, Map<y, count>>
+    private Map<Integer, Map<Integer, Integer>> pointCount;
+
+    public CountSquares() {
+        pointCount = new HashMap<>();
+    }
+
+    public void add(int[] point) {
+        int x = point[0], y = point[1];
+        pointCount.putIfAbsent(x, new HashMap<>());
+        Map<Integer, Integer> yMap = pointCount.get(x);
+        yMap.put(y, yMap.getOrDefault(y, 0) + 1);
+    }
+
+    public int count(int[] point) {
+        int x = point[0], y = point[1];
+        int result = 0;
+
+        if (!pointCount.containsKey(x)) return 0;
+
+        // Iterate through all points with same x (vertical alignment)
+        for (int y2 : pointCount.get(x).keySet()) {
+            if (y2 == y) continue; // same point
+
+            int sideLen = Math.abs(y2 - y);
+
+            // Check square to the right
+            result += countSquares(x, y, x + sideLen, y2);
+
+            // Check square to the left
+            result += countSquares(x, y, x - sideLen, y2);
+        }
+
+        return result;
+    }
+
+    private int countSquares(int x1, int y1, int x2, int y2) {
+        int count1 = getCount(x2, y1);
+        int count2 = getCount(x2, y2);
+        int countBase = getCount(x1, y2);
+
+        return count1 * count2 * countBase;
+    }
+
+    private int getCount(int x, int y) {
+        if (!pointCount.containsKey(x)) return 0;
+        return pointCount.get(x).getOrDefault(y, 0);
+    }
+}
