@@ -1,0 +1,44 @@
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        // Min-heap: [city, cost, stops]
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+
+        // Adjacency list: from -> list of [to, price]
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] flight : flights) {
+            graph.computeIfAbsent(flight[0], x -> new ArrayList<>()).add(new int[]{flight[1], flight[2]});
+        }
+
+        // Start from src, cost = 0, stops = 0
+        pq.offer(new int[]{src, 0, 0});
+
+        // Use a visited map to store the minimum stops to reach a city to prune worse paths
+        int[] visitedStops = new int[n];
+        Arrays.fill(visitedStops, Integer.MAX_VALUE);
+
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int city = curr[0];
+            int cost = curr[1];
+            int stops = curr[2];
+
+            // If destination reached within allowed stops
+            if (city == dst) return cost;
+
+            // If we’ve already visited this city with fewer stops, skip
+            if (stops > k || stops > visitedStops[city]) continue;
+            visitedStops[city] = stops;
+
+            // Explore neighbors
+            if (graph.containsKey(city)) {
+                for (int[] neighbor : graph.get(city)) {
+                    int nextCity = neighbor[0];
+                    int nextCost = neighbor[1];
+                    pq.offer(new int[]{nextCity, cost + nextCost, stops + 1});
+                }
+            }
+        }
+
+        return -1;
+    }
+}
